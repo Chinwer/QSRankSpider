@@ -1,5 +1,4 @@
 import time
-from typing import Literal
 
 from lxml import etree
 from selenium import webdriver

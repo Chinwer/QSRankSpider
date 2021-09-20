@@ -1,0 +1,1 @@
+# QS 2022 World Unviersity Ranking Crawler

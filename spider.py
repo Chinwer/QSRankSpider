@@ -1,4 +1,5 @@
 import time
+from typing import Literal
 
 from lxml import etree
 from selenium import webdriver
@@ -174,11 +175,18 @@ def parse_us_uni_rank(browser: WebDriver):
     for i in range(num):
         indicators[i] = tree.xpath(USUniRank.INDICATORS[i])[0].strip()
 
-    # overall = tree.xpath(USUniRank.OVERALL)[0].strip()
-    # research = tree.xpath(USUniRank.RESEARCH)[0].strip()
-    # learning_experience = tree.xpath(USUniRank.LEARNING_EXPERIENCE)[0].strip()
-    # diversity = tree.xpath(USUniRank.DIVERSITY)[0].strip()
-    # employability = tree.xpath(USUniRank.EMPLOYABILITY)[0].strip()
+    if num == 5:
+        overall = indicators[0]
+        research = indicators[1]
+        learning_experience = indicators[2]
+        diversity = indicators[3]
+        employability = indicators[4]
+    else:
+        overall = ''
+        research = indicators[0]
+        learning_experience = indicators[1]
+        diversity = indicators[2]
+        employability = indicators[3]
 
     browser.execute_script('document.querySelector("#rankingsTab > div.left > div.tit-list > ul > li.nav-item.last > a").click()')
     years = tree.xpath(Rank.YEARS)
@@ -186,11 +194,11 @@ def parse_us_uni_rank(browser: WebDriver):
 
     return USUniRank(
         rank=rank,
-        overall='',
-        research=indicators[0],
-        learning_experience=indicators[1],
-        diversity=indicators[2],
-        employability=indicators[3],
+        overall=overall,
+        research=research,
+        learning_experience=learning_experience,
+        diversity=diversity,
+        employability=employability,
         years=years,
         ranks=ranks
     )
@@ -361,22 +369,23 @@ def get_one_university(browser: WebDriver, url: str) -> University:
 def handle_exception(msg: str):
     with open(LOG_FILENAME, 'a') as f:
         f.write(msg)
-    print(msg)
+    # print(msg)
  
 
 def get_all_universities(urls: list[str], browser: WebDriver) -> list[University]:
     res: list[University] = []
 
-    for url in urls:
+    for i, url in enumerate(urls):
         url = url.strip()
         browser.get(url)
 
         try:
             uni = get_one_university(browser, url)
-            print(uni)
         except Exception:
             handle_exception('{} Error!\n'.format(url))
+            print('{} / 1300'.format(i + 600))
             continue
+        print('{} / 1300'.format(i + 600))
         res.append(uni)
 
     return res
@@ -390,7 +399,7 @@ def main():
     options.add_experimental_option('prefs', prefs)
     browser = webdriver.Chrome(options=options)
 
-    urls = get_all_urls_from_file('1.txt')[107:108]
+    urls = get_all_urls_from_file('urls.txt')[600:900]
     unis = get_all_universities(urls, browser)
     save_to_excel(unis, 'res.xlsx')
 

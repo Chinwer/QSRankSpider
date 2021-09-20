@@ -383,9 +383,9 @@ def get_all_universities(urls: list[str], browser: WebDriver) -> list[University
             uni = get_one_university(browser, url)
         except Exception:
             handle_exception('{} Error!\n'.format(url))
-            print('{} / 1300'.format(i + 900))
+            print('{} / 1300'.format(i + 1100))
             continue
-        print('{} / 1300'.format(i + 900))
+        print('{} / 1300'.format(i + 1100))
         res.append(uni)
 
     return res
@@ -399,7 +399,7 @@ def main():
     options.add_experimental_option('prefs', prefs)
     browser = webdriver.Chrome(options=options)
 
-    urls = get_all_urls_from_file('urls.txt')[900:1100]
+    urls = get_all_urls_from_file('urls.txt')[1100:]
     unis = get_all_universities(urls, browser)
     save_to_excel(unis, 'res.xlsx')
 

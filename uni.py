@@ -1,8 +1,12 @@
+from os import stat
+
+
 class Rank:
     NUM = '//div[@class="right"]//div[@class="circle"]'
     DATA = '//*[@id="rankingsTab"]/div[1]/div[1]/ul/li[2]/a'
     YEARS = '//*[@id="rank-data"]/ul/li/text()'
     RANKS = '//*[@id="rank-data"]/ul/li/div/text()'
+    DATA_BTN = '#rankingsTab > div.left > div.tit-list > ul > li.nav-item.last > a'
 
     def __init__(self, rank, overall, years=[], ranks=[]):
         self.rank = rank
@@ -72,27 +76,62 @@ class QSRank(Rank):
 class QSSubjectRank(Rank):
     ELEM = 'subj-tab'
     RANK = '//*[@id="subj-tab"]/div/text()'
-    OVERALL = '//div[@class="circle"][1]/div/text()'
-    ACADEMIC_REPUTATION = '//div[@class="circle"][2]/div/text()'
-    EMPLOYER_REPUTATION = '//div[@class="circle"][3]/div/text()'
-    H_INDEX_CITATIONS = '//div[@class="circle"][4]/div/text()'
-    CITATIONS_PER_PAPER = '//div[@class="circle"][5]/div/text()'
-    INDICATORS = [
-        OVERALL,
-        ACADEMIC_REPUTATION,
-        EMPLOYER_REPUTATION,
-        H_INDEX_CITATIONS,
-        CITATIONS_PER_PAPER,
+
+    ITEM_SCORES = [
+        '//div[@class="circle"][1]/div/text()',
+        '//div[@class="circle"][2]/div/text()',
+        '//div[@class="circle"][3]/div/text()',
+        '//div[@class="circle"][4]/div/text()',
+        '//div[@class="circle"][5]/div/text()',
+    ]
+    ITEM_NAMES = [
+        '//div[@class="circle"][1]/div[@class="itm-name"]/text()',
+        '//div[@class="circle"][2]/div[@class="itm-name"]/text()',
+        '//div[@class="circle"][3]/div[@class="itm-name"]/text()',
+        '//div[@class="circle"][4]/div[@class="itm-name"]/text()',
+        '//div[@class="circle"][5]/div[@class="itm-name"]/text()',
     ]
 
+    SUBJECT_NUM = '//*[@id="subr-dd"]/li'
+    SUBJECT_BTN = '#subr-dd > li:nth-child'
+    SUBJECT_NAMES = '//*[@id="subr-dd"]/li/a/text()'
+
+    OVERALL_LITERAL = 'Overall'
+    H_INDEX_CITATIONS_LITERAL = 'H-index Citations'
+    ACADEMIC_REPUTATION_LITERAL = 'Academic Reputation'
+    EMPLOYER_REPUTATION_LITERAL = 'Employer Reputation'
+    CITATIONS_PER_PAPER_LITERAL = 'Citations per Paper'
+    ITEM_LITERALS = [
+        OVERALL_LITERAL,
+        ACADEMIC_REPUTATION_LITERAL,
+        EMPLOYER_REPUTATION_LITERAL,
+        H_INDEX_CITATIONS_LITERAL,
+        CITATIONS_PER_PAPER_LITERAL
+    ]
+
+    @staticmethod
+    def map_item_name_to_idx(name: str) -> int:
+        for i, l in enumerate(QSSubjectRank.ITEM_LITERALS):
+            if name in l:
+                return i
+        return 0
+
+    @staticmethod
+    def get_nth_subject_item_js_path(idx: int) -> str:
+        return '{}({}) > a'.format(QSSubjectRank.SUBJECT_BTN, str(idx))
+
+    @staticmethod
+    def get_nth_subject_name_xpath(idx: int) -> str:
+        return '//*[@id="subr-dd"]/li[{}]/a/text()'.format(idx)
 
     def __init__(
-        self, rank, overall, academic_reputation,
+        self, name, rank, overall, academic_reputation,
         employer_reputation, h_index_citations, 
         citations_per_paper, years=[], ranks=[]
     ):
         super().__init__(rank, overall, years, ranks)
 
+        self.name = name
         self.academic_reputation = academic_reputation
         self.employer_reputation = employer_reputation
         self.h_index_citations = h_index_citations
@@ -101,6 +140,7 @@ class QSSubjectRank(Rank):
     def __str__(self) -> str:
         res = '\n\t------ QS WUR Ranking By Subject ------\n'
 
+        res += '\tSubject Name: {}\n'.format(self.name)
         res += '\tRank: {}\n'.format(self.rank)
         res += '\tOverall: {}\n'.format(self.overall)
         res += '\tAcademic Reputation: {}\n'.format(self.academic_reputation)
@@ -356,8 +396,9 @@ class University:
         total_students: str, total_pg_students: str, total_ug_students:str,
         inter_pg_students: str, inter_ug_students: str,
         total_faculty_staff: str, inter_faculty_staff: str, domes_faculty_staff: str,
-        qs_rank: QSRank=None, qs_subject_rank: QSSubjectRank=None, wu_rank: WURank=None,
-        us_uni_rank: USUniRank=None, ge_rank: GERank=None, au_rank: AURank=None
+        qs_rank: QSRank=None, wu_rank: WURank=None, us_uni_rank: USUniRank=None, 
+        ge_rank: GERank=None, au_rank: AURank=None,
+        qs_subject_ranks: list[QSSubjectRank]=None
     ):
 
         # base information
@@ -382,11 +423,11 @@ class University:
 
         # detail ranking information
         self.qs_rank = qs_rank
-        self.qs_subject_rank = qs_subject_rank
         self.wu_rank = wu_rank
         self.us_uni_rank = us_uni_rank
         self.ge_rank = ge_rank
         self.au_rank = au_rank
+        self.qs_subject_ranks = qs_subject_ranks
 
     def __str__(self) -> str:
         res = '{\n'
@@ -408,11 +449,13 @@ class University:
         res += '\tDomestic staff: {}\n'.format(self.domes_faculty_staff)
 
         res += str(self.qs_rank) if self.qs_rank else ''
-        res += str(self.qs_subject_rank) if self.qs_subject_rank else ''
         res += str(self.wu_rank) if self.wu_rank else ''
         res += str(self.us_uni_rank) if self.us_uni_rank else ''
         res += str(self.ge_rank) if self.ge_rank else ''
         res += str(self.au_rank) if self.au_rank else ''
+
+        for i in self.qs_subject_ranks:
+            res += str(i) if i else ''
 
         res += '}\n'
 

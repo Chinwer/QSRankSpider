@@ -72,7 +72,7 @@ def parse_qs_rank(browser: WebDriver):
     for i in range(num):
         indicators[i] = tree.xpath(QSRank.INDICATORS[i])[0].strip()
 
-    browser.execute_script('document.querySelector("#rankingsTab > div.left > div.tit-list > ul > li.nav-item.last > a").click()')
+    browser.execute_script('document.querySelector("{}").click()'.format(Rank.DATA_BTN))
     years = tree.xpath(Rank.YEARS)
     ranks = tree.xpath(Rank.RANKS)
 
@@ -90,28 +90,26 @@ def parse_qs_rank(browser: WebDriver):
     )
 
 
-def parse_qs_subject_rank(browser: WebDriver):
-    try:
-        _ = browser.find_element_by_id(QSSubjectRank.ELEM)
-    except NoSuchElementException:
-        return None
-
-    browser.execute_script('document.querySelector("#{}").click()'.format(QSSubjectRank.ELEM))
-    time.sleep(WAIT_TIME)
-
-    indicators = [''] * 5
+def parse_qs_subject_rank(idx: int, browser: WebDriver):
     tree = etree.HTML(browser.page_source)
+
+    indicators = [''] * len(QSSubjectRank.ITEM_LITERALS)
     num = len(tree.xpath(Rank.NUM))
+    name = tree.xpath(QSSubjectRank.get_nth_subject_name_xpath(idx))[0].strip()
     rank = tree.xpath(QSSubjectRank.RANK)[0].strip()
 
     for i in range(num):
-        indicators[i] = tree.xpath(QSSubjectRank.INDICATORS[i])[0].strip()
+        item_name = tree.xpath(QSSubjectRank.ITEM_NAMES[i])[0].strip()
+        item_score = tree.xpath(QSSubjectRank.ITEM_SCORES[i])[0].strip()
+        idx = QSSubjectRank.map_item_name_to_idx(item_name)
+        indicators[idx] = item_score
 
-    browser.execute_script('document.querySelector("#rankingsTab > div.left > div.tit-list > ul > li.nav-item.last > a").click()')
+    browser.execute_script('document.querySelector("{}").click()'.format(Rank.DATA_BTN))
     years = tree.xpath(Rank.YEARS)
     ranks = tree.xpath(Rank.RANKS)
 
     return QSSubjectRank(
+        name=name,
         rank=rank,
         overall=indicators[0],
         academic_reputation=indicators[1],
@@ -121,6 +119,29 @@ def parse_qs_subject_rank(browser: WebDriver):
         years=years,
         ranks=ranks
     )
+
+
+def parse_qs_subject_ranks(browser: WebDriver):
+    try:
+        _ = browser.find_element_by_id(QSSubjectRank.ELEM)
+    except NoSuchElementException:
+        return None
+
+    browser.execute_script('document.querySelector("#{}").click()'.format(QSSubjectRank.ELEM))
+    time.sleep(WAIT_TIME)
+
+    tree = etree.HTML(browser.page_source)
+    subject_nums = len(tree.xpath(QSSubjectRank.SUBJECT_NUM))
+    ranks = []
+    for i in range(subject_nums):
+        browser.execute_script(
+            'document.querySelector("{}").click()'
+            .format(QSSubjectRank.get_nth_subject_item_js_path(i + 1))
+        )
+        time.sleep(WAIT_TIME)
+        ranks.append(parse_qs_subject_rank(i + 1, browser))
+
+    return ranks
 
 
 def parse_wu_rank(browser: WebDriver):
@@ -141,7 +162,7 @@ def parse_wu_rank(browser: WebDriver):
     thought_leadership = tree.xpath(WURank.THOUGHT_LEADERSHIP)[0].strip()
     value_for_money = tree.xpath(WURank.VALUE_FOR_MONEY)[0].strip()
 
-    browser.execute_script('document.querySelector("#rankingsTab > div.left > div.tit-list > ul > li.nav-item.last > a").click()')
+    browser.execute_script('document.querySelector("{}").click()'.format(Rank.DATA_BTN))
     years = tree.xpath(Rank.YEARS)
     ranks = tree.xpath(Rank.RANKS)
 
@@ -187,7 +208,7 @@ def parse_us_uni_rank(browser: WebDriver):
         diversity = indicators[2]
         employability = indicators[3]
 
-    browser.execute_script('document.querySelector("#rankingsTab > div.left > div.tit-list > ul > li.nav-item.last > a").click()')
+    browser.execute_script('document.querySelector("{}").click()'.format(Rank.DATA_BTN))
     years = tree.xpath(Rank.YEARS)
     ranks = tree.xpath(Rank.RANKS)
 
@@ -220,7 +241,7 @@ def parse_ge_rank(browser: WebDriver):
     for i in range(num):
         indicators[i] = tree.xpath(GERank.INDICATORS[i])[0].strip()
 
-    browser.execute_script('document.querySelector("#rankingsTab > div.left > div.tit-list > ul > li.nav-item.last > a").click()')
+    browser.execute_script('document.querySelector("{}").click()'.format(Rank.DATA_BTN))
     years = tree.xpath(Rank.YEARS)
     ranks = tree.xpath(Rank.RANKS)
 
@@ -254,7 +275,7 @@ def parse_asian_rank(browser: WebDriver):
     for i in range(num):
         indicators[i] = tree.xpath(AURank.INDICATORS[i])[0].strip()
 
-    browser.execute_script('document.querySelector("#rankingsTab > div.left > div.tit-list > ul > li.nav-item.last > a").click()')
+    browser.execute_script('document.querySelector("{}").click()'.format(Rank.DATA_BTN))
     years = tree.xpath(Rank.YEARS)
     ranks = tree.xpath(Rank.RANKS)
 
@@ -309,36 +330,36 @@ def get_one_university(browser: WebDriver, url: str) -> University:
     else:
         scholarships = ''
 
-    time.sleep(WAIT_CLICK_EVENT_REGISTER_TIME)  # wait for ajac click event bound to element
-    try:
-        qs_rank = parse_qs_rank(browser)
-    except Exception:
-        qs_rank = handle_exception('{}, QS Rank Error!\n'.format(url))
+    time.sleep(WAIT_CLICK_EVENT_REGISTER_TIME)  # wait for ajax click event bound to element
+    # try:
+    #     qs_rank = parse_qs_rank(browser)
+    # except Exception:
+    #     qs_rank = handle_exception('{}, QS Rank Error!\n'.format(url))
 
     try:
-        qs_subject_rank = parse_qs_subject_rank(browser)
+        qs_subject_ranks = parse_qs_subject_ranks(browser)
     except Exception:
-        qs_subject_rank = handle_exception('{}, QS Subject Rank Error!\n'.format(url))
+        qs_subject_ranks = handle_exception('{}, QS Subject Rank Error!\n'.format(url))
 
-    try:
-        wu_rank = parse_wu_rank(browser)
-    except Exception:
-        wu_rank = handle_exception('{}, WU Rank Error!\n'.format(url))
+    # try:
+    #     wu_rank = parse_wu_rank(browser)
+    # except Exception:
+    #     wu_rank = handle_exception('{}, WU Rank Error!\n'.format(url))
 
-    try:
-        us_uni_rank = parse_us_uni_rank(browser)
-    except Exception:
-        us_uni_rank = handle_exception('{}, US Uni Error!\n'.format(url))
+    # try:
+    #     us_uni_rank = parse_us_uni_rank(browser)
+    # except Exception:
+    #     us_uni_rank = handle_exception('{}, US Uni Error!\n'.format(url))
 
-    try:
-        ge_rank = parse_ge_rank(browser)
-    except Exception:
-        ge_rank = handle_exception('{}, GE Rank Error!\n'.format(url))
+    # try:
+    #     ge_rank = parse_ge_rank(browser)
+    # except Exception:
+    #     ge_rank = handle_exception('{}, GE Rank Error!\n'.format(url))
 
-    try:
-        au_rank = parse_asian_rank(browser)
-    except Exception:
-        au_rank = handle_exception('{}, Asian University Rank Error!\n'.format(url))
+    # try:
+    #     au_rank = parse_asian_rank(browser)
+    # except Exception:
+    #     au_rank = handle_exception('{}, Asian University Rank Error!\n'.format(url))
 
     return University(
         title=title,
@@ -356,12 +377,12 @@ def get_one_university(browser: WebDriver, url: str) -> University:
         total_faculty_staff=total_faculty_staff,
         inter_faculty_staff=inter_faculty_staff,
         domes_faculty_staff=domes_faculty_staff,
-        qs_rank=qs_rank,
-        qs_subject_rank=qs_subject_rank,
-        wu_rank=wu_rank,
-        us_uni_rank=us_uni_rank,
-        ge_rank=ge_rank,
-        au_rank=au_rank
+        # qs_rank=qs_rank,
+        # wu_rank=wu_rank,
+        # us_uni_rank=us_uni_rank,
+        # ge_rank=ge_rank,
+        # au_rank=au_rank,
+        qs_subject_ranks=qs_subject_ranks,
     )
 
 
@@ -380,14 +401,48 @@ def get_all_universities(urls: list[str], browser: WebDriver) -> list[University
 
         try:
             uni = get_one_university(browser, url)
+            # print(uni)
         except Exception:
             handle_exception('{} Error!\n'.format(url))
-            print('{} / 1300'.format(i + 1100))
             continue
-        print('{} / 1300'.format(i + 1100))
         res.append(uni)
 
     return res
+
+
+# Get all subjects of a single university
+def get_one_uni_subjects(browser: WebDriver) -> list[str]:
+    time.sleep(WAIT_CLICK_EVENT_REGISTER_TIME)  # wait for ajax click event bound to element
+    try:
+        _ = browser.find_element_by_id(QSSubjectRank.ELEM)
+    except NoSuchElementException:
+        return []
+
+    browser.execute_script('document.querySelector("#{}").click()'.format(QSSubjectRank.ELEM))
+    time.sleep(0.5)
+
+    tree = etree.HTML(browser.page_source)
+    subjects = tree.xpath(QSSubjectRank.SUBJECT_NAMES)
+
+    return subjects
+
+
+# Get all subjects of all universities
+def get_all_subjects(urls: list[str], browser: WebDriver):
+    res: list[str] = []
+
+    for i, url in enumerate(urls):
+        url = url.strip()
+        browser.get(url)
+        res += get_one_uni_subjects(browser)
+        print('{}/1300'.format(i + 1))
+    
+    print('Total subjects types: {}'.format(len(res)))
+    res: set = set(res)
+    print('Total subjects types: (without repetition) {}'.format(len(res)))
+    with open('subjects.txt', 'w') as f:
+        for i in res:
+            f.write('{}\n'.format(i))
 
 
 def main():
@@ -398,9 +453,14 @@ def main():
     options.add_experimental_option('prefs', prefs)
     browser = webdriver.Chrome(options=options)
 
-    urls = get_all_urls_from_file('urls.txt')[1100:]
-    unis = get_all_universities(urls, browser)
-    save_to_excel(unis, 'res.xlsx')
+    urls = get_all_urls_from_file('urls.txt')
+    # unis = get_all_universities(urls, browser)
+    # save_to_excel(unis, 'res_subject.xlsx')
+
+    start_time = time.time()
+    get_all_subjects(urls, browser)
+    end_time = time.time()
+    print('{}s'.format(end_time - start_time))
 
 
 if __name__ == '__main__':

@@ -45,3 +45,12 @@ https://www.topuniversities.com/universities/university-college-dublin, QS Subje
 https://www.topuniversities.com/universities/university-minnesota-twin-cities, QS Subject Rank Error!
 https://www.topuniversities.com/universities/universite-catholique-de-louvain-uclouvain, QS Subject Rank Error!
 https://www.topuniversities.com/universities/hebrew-university-jerusalem, QS Subject Rank Error!
+https://www.topuniversities.com/universities/university-aberdeen, QS Subject Rank Error!
+https://www.topuniversities.com/universities/vrije-universiteit-amsterdam, QS Subject Rank Error!
+https://www.topuniversities.com/universities/university-aberdeen, QS Subject Rank Error!
+https://www.topuniversities.com/universities/vrije-universiteit-amsterdam, QS Subject Rank Error!
+https://www.topuniversities.com/universities/university-notre-dame, QS Subject Rank Error!
+https://www.topuniversities.com/universities/university-virginia, QS Subject Rank Error!
+https://www.topuniversities.com/universities/university-antwerp, QS Subject Rank Error!
+https://www.topuniversities.com/universities/university-leicester, QS Subject Rank Error!
+https://www.topuniversities.com/universities/universita-di-padova, QS Subject Rank Error!

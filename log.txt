@@ -11,3 +11,17 @@ https://www.topuniversities.com/universities/university-sydney, QS Subject Rank 
 https://www.topuniversities.com/universities/university-california-los-angeles-ucla, QS Subject Rank Error!
 https://www.topuniversities.com/universities/university-british-columbia, QS Subject Rank Error!
 https://www.topuniversities.com/universities/london-school-economics-political-science-lse, QS Subject Rank Error!
+https://www.topuniversities.com/universities/duke-university, QS Subject Rank Error!
+https://www.topuniversities.com/universities/university-warwick, QS Subject Rank Error!
+https://www.topuniversities.com/universities/university-bristol, QS Subject Rank Error!
+https://www.topuniversities.com/universities/university-texas-austin, QS Subject Rank Error!
+https://www.topuniversities.com/universities/ku-leuven, QS Subject Rank Error!
+https://www.topuniversities.com/universities/university-glasgow, QS Subject Rank Error!
+https://www.topuniversities.com/universities/korea-university, QS Subject Rank Error!
+https://www.topuniversities.com/universities/university-southampton, QS Subject Rank Error!
+https://www.topuniversities.com/universities/university-copenhagen, QS Subject Rank Error!
+https://www.topuniversities.com/universities/yonsei-university, QS Subject Rank Error!
+https://www.topuniversities.com/universities/durham-university, QS Subject Rank Error!
+https://www.topuniversities.com/universities/university-auckland, QS Subject Rank Error!
+https://www.topuniversities.com/universities/university-birmingham, QS Subject Rank Error!
+https://www.topuniversities.com/universities/technical-university-denmark, QS Subject Rank Error!

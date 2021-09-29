@@ -59,3 +59,8 @@ https://www.topuniversities.com/universities/sun-yat-sen-university, QS Subject 
 https://www.topuniversities.com/universities/charles-university, QS Subject Rank Error!
 https://www.topuniversities.com/universities/massey-university, QS Subject Rank Error!
 https://www.topuniversities.com/universities/university-illinois-chicago-uic, QS Subject Rank Error!
+https://www.topuniversities.com/universities/north-carolina-state-university, QS Subject Rank Error!
+https://www.topuniversities.com/universities/university-strathclyde, QS Subject Rank Error!
+https://www.topuniversities.com/universities/university-milan, QS Subject Rank Error!
+https://www.topuniversities.com/universities/huazhong-university-science-technology, QS Subject Rank Error!
+https://www.topuniversities.com/universities/universitat-politecnica-de-valencia, QS Subject Rank Error!

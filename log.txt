@@ -3,3 +3,11 @@ https://www.topuniversities.com/universities/imperial-college-london, QS Subject
 https://www.topuniversities.com/universities/national-university-singapore-nus, QS Subject Rank Error!
 https://www.topuniversities.com/universities/university-pennsylvania, QS Subject Rank Error!
 https://www.topuniversities.com/universities/university-edinburgh, QS Subject Rank Error!
+https://www.topuniversities.com/universities/johns-hopkins-university, QS Subject Rank Error!
+https://www.topuniversities.com/universities/university-manchester, QS Subject Rank Error!
+https://www.topuniversities.com/universities/kings-college-london, QS Subject Rank Error!
+https://www.topuniversities.com/universities/seoul-national-university, QS Subject Rank Error!
+https://www.topuniversities.com/universities/university-sydney, QS Subject Rank Error!
+https://www.topuniversities.com/universities/university-california-los-angeles-ucla, QS Subject Rank Error!
+https://www.topuniversities.com/universities/university-british-columbia, QS Subject Rank Error!
+https://www.topuniversities.com/universities/london-school-economics-political-science-lse, QS Subject Rank Error!

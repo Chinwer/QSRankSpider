@@ -1,13 +1,13 @@
 import time
+import traceback
 
-from lxml import etree
+from lxml import etree, html
 from selenium import webdriver
 from selenium.webdriver.chrome.webdriver import WebDriver
 from selenium.webdriver.remote.webelement import WebElement
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
-from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support import expected_conditions as EC
 
 from util import save_to_excel
@@ -15,7 +15,7 @@ from uni import AURank, Rank, GERank, QSRank, QSSubjectRank, USUniRank, Universi
 
 
 WAIT_TIME = 1
-WAIT_CLICK_EVENT_REGISTER_TIME = 1
+WAIT_CLICK_EVENT_REGISTER_TIME = 2
 LOG_FILENAME = 'log.txt'
 START_URL = 'https://www.topuniversities.com/university-rankings/world-university-rankings/2022'
 
@@ -91,22 +91,31 @@ def parse_qs_rank(browser: WebDriver):
 
 
 def parse_qs_subject_rank(idx: int, browser: WebDriver):
-    tree = etree.HTML(browser.page_source)
+    # tree = etree.HTML(browser.page_source)
 
     indicators = [''] * len(QSSubjectRank.ITEM_LITERALS)
-    num = len(tree.xpath(Rank.NUM))
-    name = tree.xpath(QSSubjectRank.get_nth_subject_name_xpath(idx))[0].strip()
-    rank = tree.xpath(QSSubjectRank.RANK)[0].strip()
+    # num = len(tree.xpath(Rank.NUM))
+    num = len(browser.find_elements_by_xpath(Rank.NUM))
+    name = browser.find_element_by_xpath(QSSubjectRank.get_nth_subject_name_xpath(idx)).get_attribute('text')
+    # name = tree.xpath(QSSubjectRank.get_nth_subject_name_xpath(idx))[0].strip()
+    rank = browser.find_element_by_xpath(QSSubjectRank.RANK).text
+    # rank = tree.xpath(QSSubjectRank.RANK)[0].strip()
 
     for i in range(num):
-        item_name = tree.xpath(QSSubjectRank.ITEM_NAMES[i])[0].strip()
-        item_score = tree.xpath(QSSubjectRank.ITEM_SCORES[i])[0].strip()
+        # item_name = tree.xpath(QSSubjectRank.ITEM_NAMES[i])[0].strip()
+        # item_score = tree.xpath(QSSubjectRank.ITEM_SCORES[i])[0].strip()
+        item_name = browser.find_element_by_xpath(QSSubjectRank.ITEM_NAMES[i]).text
+        item_score = browser.find_element_by_xpath(QSSubjectRank.ITEM_SCORES[i]).text
         idx = QSSubjectRank.map_item_name_to_idx(item_name)
         indicators[idx] = item_score
 
     browser.execute_script('document.querySelector("{}").click()'.format(Rank.DATA_BTN))
-    years = tree.xpath(Rank.YEARS)
-    ranks = tree.xpath(Rank.RANKS)
+    # years = tree.xpath(Rank.YEARS)
+    # ranks = tree.xpath(Rank.RANKS)
+    years = browser.find_elements_by_xpath(Rank.YEARS)
+    years = [str.split(x.text, '\n')[0] for x in years]
+    ranks = browser.find_elements_by_xpath(Rank.RANKS)
+    ranks = [x.text for x in ranks]
 
     return QSSubjectRank(
         name=name,
@@ -128,7 +137,7 @@ def parse_qs_subject_ranks(browser: WebDriver):
         return None
 
     browser.execute_script('document.querySelector("#{}").click()'.format(QSSubjectRank.ELEM))
-    time.sleep(WAIT_TIME)
+    time.sleep(3)
 
     tree = etree.HTML(browser.page_source)
     subject_nums = len(tree.xpath(QSSubjectRank.SUBJECT_NUM))
@@ -339,6 +348,7 @@ def get_one_university(browser: WebDriver, url: str) -> University:
     try:
         qs_subject_ranks = parse_qs_subject_ranks(browser)
     except Exception:
+        traceback.format_exc()
         qs_subject_ranks = handle_exception('{}, QS Subject Rank Error!\n'.format(url))
 
     # try:
@@ -403,6 +413,7 @@ def get_all_universities(urls: list[str], browser: WebDriver) -> list[University
             uni = get_one_university(browser, url)
             # print(uni)
         except Exception:
+            traceback.format_exc()
             handle_exception('{} Error!\n'.format(url))
             continue
         res.append(uni)
@@ -445,23 +456,24 @@ def get_all_subjects(urls: list[str], browser: WebDriver):
             f.write('{}\n'.format(i))
 
 
-def main():
+def init_driver() -> WebDriver:
     options = webdriver.ChromeOptions()
     prefs = {
         'profile.managed_default_content_settings.images': 2
     }
     options.add_experimental_option('prefs', prefs)
-    browser = webdriver.Chrome(options=options)
+    return webdriver.Chrome(options=options)
 
-    urls = get_all_urls_from_file('urls.txt')
-    # unis = get_all_universities(urls, browser)
-    # save_to_excel(unis, 'res_subject.xlsx')
 
-    start_time = time.time()
-    get_all_subjects(urls, browser)
-    end_time = time.time()
-    print('{}s'.format(end_time - start_time))
+def main():
+    browser = init_driver()
+    urls = get_all_urls_from_file('urls.txt')[:20]
+    unis = get_all_universities(urls, browser)
+    save_to_excel(unis, 'res_new.xlsx')
 
 
 if __name__ == '__main__':
+    start_time = time.time()
     main()
+    end_time = time.time()
+    print('{} minutes.'.format((end_time - start_time) / 60))

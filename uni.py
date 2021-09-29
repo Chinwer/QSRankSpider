@@ -4,8 +4,10 @@ from os import stat
 class Rank:
     NUM = '//div[@class="right"]//div[@class="circle"]'
     DATA = '//*[@id="rankingsTab"]/div[1]/div[1]/ul/li[2]/a'
-    YEARS = '//*[@id="rank-data"]/ul/li/text()'
-    RANKS = '//*[@id="rank-data"]/ul/li/div/text()'
+    # YEARS = '//*[@id="rank-data"]/ul/li/text()'
+    # RANKS = '//*[@id="rank-data"]/ul/li/div/text()'
+    YEARS = '//*[@id="rank-data"]/ul/li'
+    RANKS = '//*[@id="rank-data"]/ul/li/div'
     DATA_BTN = '#rankingsTab > div.left > div.tit-list > ul > li.nav-item.last > a'
 
     def __init__(self, rank, overall, years=[], ranks=[]):
@@ -54,7 +56,6 @@ class QSRank(Rank):
         self.inter_faculty_ratio = inter_faculty_ratio
         self.inter_students_ratio = inter_students_ratio
 
-
     def __str__(self) -> str:
         res = '\n\t------ QS WORLD University Rankings ------\n'
 
@@ -75,21 +76,22 @@ class QSRank(Rank):
 # QS WUR Ranking By Subject
 class QSSubjectRank(Rank):
     ELEM = 'subj-tab'
-    RANK = '//*[@id="subj-tab"]/div/text()'
+    # RANK = '//*[@id="subj-tab"]/div/text()'
+    RANK = '//*[@id="subj-tab"]/div'
 
     ITEM_SCORES = [
-        '//div[@class="circle"][1]/div/text()',
-        '//div[@class="circle"][2]/div/text()',
-        '//div[@class="circle"][3]/div/text()',
-        '//div[@class="circle"][4]/div/text()',
-        '//div[@class="circle"][5]/div/text()',
+        '//div[@class="circle"][1]/div',
+        '//div[@class="circle"][2]/div',
+        '//div[@class="circle"][3]/div',
+        '//div[@class="circle"][4]/div',
+        '//div[@class="circle"][5]/div',
     ]
     ITEM_NAMES = [
-        '//div[@class="circle"][1]/div[@class="itm-name"]/text()',
-        '//div[@class="circle"][2]/div[@class="itm-name"]/text()',
-        '//div[@class="circle"][3]/div[@class="itm-name"]/text()',
-        '//div[@class="circle"][4]/div[@class="itm-name"]/text()',
-        '//div[@class="circle"][5]/div[@class="itm-name"]/text()',
+        '//div[@class="circle"][1]/div[@class="itm-name"]',
+        '//div[@class="circle"][2]/div[@class="itm-name"]',
+        '//div[@class="circle"][3]/div[@class="itm-name"]',
+        '//div[@class="circle"][4]/div[@class="itm-name"]',
+        '//div[@class="circle"][5]/div[@class="itm-name"]',
     ]
 
     SUBJECT_NUM = '//*[@id="subr-dd"]/li'
@@ -122,7 +124,8 @@ class QSSubjectRank(Rank):
 
     @staticmethod
     def get_nth_subject_name_xpath(idx: int) -> str:
-        return '//*[@id="subr-dd"]/li[{}]/a/text()'.format(idx)
+        # return '//*[@id="subr-dd"]/li[{}]/a/text()'.format(idx)
+        return '//*[@id="subr-dd"]/li[{}]/a'.format(idx)
 
     def __init__(
         self, name, rank, overall, academic_reputation,

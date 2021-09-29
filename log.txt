@@ -64,3 +64,6 @@ https://www.topuniversities.com/universities/university-strathclyde, QS Subject 
 https://www.topuniversities.com/universities/university-milan, QS Subject Rank Error!
 https://www.topuniversities.com/universities/huazhong-university-science-technology, QS Subject Rank Error!
 https://www.topuniversities.com/universities/universitat-politecnica-de-valencia, QS Subject Rank Error!
+https://www.topuniversities.com/universities/university-witwatersrand Error!
+https://www.topuniversities.com/universities/universidade-nova-de-lisboa, QS Subject Rank Error!
+https://www.topuniversities.com/universities/university-trento, QS Subject Rank Error!

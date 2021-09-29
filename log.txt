@@ -54,3 +54,8 @@ https://www.topuniversities.com/universities/university-virginia, QS Subject Ran
 https://www.topuniversities.com/universities/university-antwerp, QS Subject Rank Error!
 https://www.topuniversities.com/universities/university-leicester, QS Subject Rank Error!
 https://www.topuniversities.com/universities/universita-di-padova, QS Subject Rank Error!
+https://www.topuniversities.com/universities/gadjah-mada-university, QS Subject Rank Error!
+https://www.topuniversities.com/universities/sun-yat-sen-university, QS Subject Rank Error!
+https://www.topuniversities.com/universities/charles-university, QS Subject Rank Error!
+https://www.topuniversities.com/universities/massey-university, QS Subject Rank Error!
+https://www.topuniversities.com/universities/university-illinois-chicago-uic, QS Subject Rank Error!

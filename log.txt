@@ -67,3 +67,5 @@ https://www.topuniversities.com/universities/universitat-politecnica-de-valencia
 https://www.topuniversities.com/universities/university-witwatersrand Error!
 https://www.topuniversities.com/universities/universidade-nova-de-lisboa, QS Subject Rank Error!
 https://www.topuniversities.com/universities/university-trento, QS Subject Rank Error!
+https://www.topuniversities.com/universities/university-tennessee-knoxville Error!
+https://www.topuniversities.com/universities/universidade-federal-de-pelotas, QS Subject Rank Error!

@@ -493,7 +493,7 @@ def init_driver() -> WebDriver:
 
 def main():
     browser = init_driver()
-    urls = get_all_urls_from_file('urls.txt')[100:500]
+    urls = get_all_urls_from_file('urls.txt')[1100:]
     unis = get_all_universities(urls, browser)
     save_to_excel(unis, 'res_new.xlsx')
 

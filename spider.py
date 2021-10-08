@@ -1,6 +1,5 @@
 import time
 import traceback
-from typing import ItemsView
 
 from lxml import etree, html
 from selenium import webdriver
@@ -317,33 +316,33 @@ def get_one_university(browser: WebDriver, url: str) -> University:
     tree = etree.HTML(browser.page_source)
 
     title = tree.xpath(University.TITLE)[0].strip()
-    # status = tree.xpath(University.STATUS)[0].strip()
-    # research_output = tree.xpath(University.RESEARCH_OUTPUT)[0].strip()
-    # sf_ratio = tree.xpath(University.SF_RATIO)[0].strip()
-    # try:
-    #     inter_students = tree.xpath(University.INTER_STUDENTS)[0].strip()
-    # except IndexError:
-    #     inter_students = ''
-    # size = tree.xpath(University.SIZE)[0].strip()
+    status = tree.xpath(University.STATUS)[0].strip()
+    research_output = tree.xpath(University.RESEARCH_OUTPUT)[0].strip()
+    sf_ratio = tree.xpath(University.SF_RATIO)[0].strip()
+    try:
+        inter_students = tree.xpath(University.INTER_STUDENTS)[0].strip()
+    except IndexError:
+        inter_students = ''
+    size = tree.xpath(University.SIZE)[0].strip()
 
-    # total_students = tree.xpath(University.TOTAL_STUDENTS)[0].strip()
-    # total_pg_students = tree.xpath(University.TOTAL_PG_STUDENTS)[0].strip()
-    # total_ug_students = tree.xpath(University.TOTAL_UG_STUDENTS)[0].strip()
-    # try:
-    #     inter_pg_students = tree.xpath(University.INTER_PG_STUDENTS)[0].strip()
-    #     inter_ug_students = tree.xpath(University.INTER_UG_STUDENTS)[0].strip()
-    # except IndexError:
-    #     inter_pg_students = ''
-    #     inter_ug_students = ''
-    # total_faculty_staff = tree.xpath(University.TOTAL_FACULTY_STAFF)[0].strip()
-    # inter_faculty_staff = tree.xpath(University.INTER_FACULTY_STAFF)[0].strip()
-    # domes_faculty_staff = tree.xpath(University.DOMES_FACULTY_STAFF)[0].strip()
+    total_students = tree.xpath(University.TOTAL_STUDENTS)[0].strip()
+    total_pg_students = tree.xpath(University.TOTAL_PG_STUDENTS)[0].strip()
+    total_ug_students = tree.xpath(University.TOTAL_UG_STUDENTS)[0].strip()
+    try:
+        inter_pg_students = tree.xpath(University.INTER_PG_STUDENTS)[0].strip()
+        inter_ug_students = tree.xpath(University.INTER_UG_STUDENTS)[0].strip()
+    except IndexError:
+        inter_pg_students = ''
+        inter_ug_students = ''
+    total_faculty_staff = tree.xpath(University.TOTAL_FACULTY_STAFF)[0].strip()
+    inter_faculty_staff = tree.xpath(University.INTER_FACULTY_STAFF)[0].strip()
+    domes_faculty_staff = tree.xpath(University.DOMES_FACULTY_STAFF)[0].strip()
 
-    # scholarships = tree.xpath(University.SCHOLARSHIPS)
-    # if len(scholarships):
-    #     scholarships = scholarships[0].strip()
-    # else:
-    #     scholarships = ''
+    scholarships = tree.xpath(University.SCHOLARSHIPS)
+    if len(scholarships):
+        scholarships = scholarships[0].strip()
+    else:
+        scholarships = ''
 
     time.sleep(WAIT_CLICK_EVENT_REGISTER_TIME)  # wait for ajax click event bound to element
     try:
@@ -351,75 +350,55 @@ def get_one_university(browser: WebDriver, url: str) -> University:
     except Exception:
         qs_rank = handle_exception('{}, QS Rank Error!\n'.format(url))
 
-    # try:
-    #     qs_subject_ranks = parse_qs_subject_ranks(browser)
-    # except Exception:
-    #     traceback.format_exc()
-    #     qs_subject_ranks = handle_exception('{}, QS Subject Rank Error!\n'.format(url))
+    try:
+        qs_subject_ranks = parse_qs_subject_ranks(browser)
+    except Exception:
+        traceback.format_exc()
+        qs_subject_ranks = handle_exception('{}, QS Subject Rank Error!\n'.format(url))
 
-    # try:
-    #     wu_rank = parse_wu_rank(browser)
-    # except Exception:
-    #     wu_rank = handle_exception('{}, WU Rank Error!\n'.format(url))
+    try:
+        wu_rank = parse_wu_rank(browser)
+    except Exception:
+        wu_rank = handle_exception('{}, WU Rank Error!\n'.format(url))
 
-    # try:
-    #     us_uni_rank = parse_us_uni_rank(browser)
-    # except Exception:
-    #     us_uni_rank = handle_exception('{}, US Uni Error!\n'.format(url))
+    try:
+        us_uni_rank = parse_us_uni_rank(browser)
+    except Exception:
+        us_uni_rank = handle_exception('{}, US Uni Error!\n'.format(url))
 
-    # try:
-    #     ge_rank = parse_ge_rank(browser)
-    # except Exception:
-    #     ge_rank = handle_exception('{}, GE Rank Error!\n'.format(url))
+    try:
+        ge_rank = parse_ge_rank(browser)
+    except Exception:
+        ge_rank = handle_exception('{}, GE Rank Error!\n'.format(url))
 
-    # try:
-    #     au_rank = parse_asian_rank(browser)
-    # except Exception:
-    #     au_rank = handle_exception('{}, Asian University Rank Error!\n'.format(url))
-
-    # return University(
-    #     title=title,
-    #     status=status,
-    #     research_output=research_output,
-    #     sf_ratio=sf_ratio,
-    #     scholarships=scholarships,
-    #     inter_students=inter_students,
-    #     size=size,
-    #     total_students=total_students,
-    #     total_pg_students=total_pg_students,
-    #     total_ug_students=total_ug_students,
-    #     inter_pg_students=inter_pg_students,
-    #     inter_ug_students=inter_ug_students,
-    #     total_faculty_staff=total_faculty_staff,
-    #     inter_faculty_staff=inter_faculty_staff,
-    #     domes_faculty_staff=domes_faculty_staff,
-    #     qs_rank=qs_rank,
-    #     wu_rank=wu_rank,
-    #     us_uni_rank=us_uni_rank,
-    #     ge_rank=ge_rank,
-    #     au_rank=au_rank,
-    #     qs_subject_ranks=qs_subject_ranks,
-    # )
+    try:
+        au_rank = parse_asian_rank(browser)
+    except Exception:
+        au_rank = handle_exception('{}, Asian University Rank Error!\n'.format(url))
 
     return University(
         title=title,
-        status='',
-        research_output='',
-        sf_ratio='',
-        scholarships='',
-        inter_students='',
-        size='',
-        total_students='',
-        total_pg_students='',
-        total_ug_students='',
-        inter_pg_students='',
-        inter_ug_students='',
-        total_faculty_staff='',
-        inter_faculty_staff='',
-        domes_faculty_staff='',
+        status=status,
+        research_output=research_output,
+        sf_ratio=sf_ratio,
+        scholarships=scholarships,
+        inter_students=inter_students,
+        size=size,
+        total_students=total_students,
+        total_pg_students=total_pg_students,
+        total_ug_students=total_ug_students,
+        inter_pg_students=inter_pg_students,
+        inter_ug_students=inter_ug_students,
+        total_faculty_staff=total_faculty_staff,
+        inter_faculty_staff=inter_faculty_staff,
+        domes_faculty_staff=domes_faculty_staff,
         qs_rank=qs_rank,
+        wu_rank=wu_rank,
+        us_uni_rank=us_uni_rank,
+        ge_rank=ge_rank,
+        au_rank=au_rank,
+        qs_subject_ranks=qs_subject_ranks,
     )
-
 
 
 def handle_exception(msg: str):
@@ -493,7 +472,7 @@ def init_driver() -> WebDriver:
 
 def main():
     browser = init_driver()
-    urls = get_all_urls_from_file('urls.txt')[1100:]
+    urls = get_all_urls_from_file('urls.txt')
     unis = get_all_universities(urls, browser)
     save_to_excel(unis, 'res_new.xlsx')
 

@@ -1,5 +1,6 @@
 import time
 import traceback
+from typing import ItemsView
 
 from lxml import etree, html
 from selenium import webdriver
@@ -65,24 +66,29 @@ def get_all_urls_from_file(filename: str) -> list[str]:
 
 def parse_qs_rank(browser: WebDriver):
     tree = etree.HTML(browser.page_source)
-    indicators = [''] * len(QSRank.INDICATORS)
+    indicators = [''] * len(QSRank.ITEM_LITERALS)
     num = len(tree.xpath(Rank.NUM))
     rank = tree.xpath(QSRank.RANK)[0].strip()
 
     for i in range(num):
-        indicators[i] = tree.xpath(QSRank.INDICATORS[i])[0].strip()
+        item_name = tree.xpath(QSRank.ITEM_NAMES[i])[0].strip()
+        item_score = tree.xpath(QSRank.ITEM_SCORES[i])[0].strip()
+        idx = QSRank.map_item_name_to_idx(item_name)
+        indicators[idx] = item_score
 
     browser.execute_script('document.querySelector("{}").click()'.format(Rank.DATA_BTN))
     years = tree.xpath(Rank.YEARS)
+    years = [str.split(x.text, '\n')[0] for x in years]
     ranks = tree.xpath(Rank.RANKS)
+    ranks = [x.text for x in ranks]
 
     return QSRank(
         rank=rank,
         overall=indicators[0],
         academic_reputation=indicators[1],
-        citations_per_faculty=indicators[2],
-        employer_reputation=indicators[3],
-        fs_ratio=indicators[4],
+        employer_reputation=indicators[2],
+        fs_ratio=indicators[3],
+        citations_per_faculty=indicators[4],
         inter_faculty_ratio=indicators[5],
         inter_students_ratio=indicators[6],
         years=years,
@@ -311,45 +317,45 @@ def get_one_university(browser: WebDriver, url: str) -> University:
     tree = etree.HTML(browser.page_source)
 
     title = tree.xpath(University.TITLE)[0].strip()
-    status = tree.xpath(University.STATUS)[0].strip()
-    research_output = tree.xpath(University.RESEARCH_OUTPUT)[0].strip()
-    sf_ratio = tree.xpath(University.SF_RATIO)[0].strip()
-    try:
-        inter_students = tree.xpath(University.INTER_STUDENTS)[0].strip()
-    except IndexError:
-        inter_students = ''
-    size = tree.xpath(University.SIZE)[0].strip()
+    # status = tree.xpath(University.STATUS)[0].strip()
+    # research_output = tree.xpath(University.RESEARCH_OUTPUT)[0].strip()
+    # sf_ratio = tree.xpath(University.SF_RATIO)[0].strip()
+    # try:
+    #     inter_students = tree.xpath(University.INTER_STUDENTS)[0].strip()
+    # except IndexError:
+    #     inter_students = ''
+    # size = tree.xpath(University.SIZE)[0].strip()
 
-    total_students = tree.xpath(University.TOTAL_STUDENTS)[0].strip()
-    total_pg_students = tree.xpath(University.TOTAL_PG_STUDENTS)[0].strip()
-    total_ug_students = tree.xpath(University.TOTAL_UG_STUDENTS)[0].strip()
-    try:
-        inter_pg_students = tree.xpath(University.INTER_PG_STUDENTS)[0].strip()
-        inter_ug_students = tree.xpath(University.INTER_UG_STUDENTS)[0].strip()
-    except IndexError:
-        inter_pg_students = ''
-        inter_ug_students = ''
-    total_faculty_staff = tree.xpath(University.TOTAL_FACULTY_STAFF)[0].strip()
-    inter_faculty_staff = tree.xpath(University.INTER_FACULTY_STAFF)[0].strip()
-    domes_faculty_staff = tree.xpath(University.DOMES_FACULTY_STAFF)[0].strip()
+    # total_students = tree.xpath(University.TOTAL_STUDENTS)[0].strip()
+    # total_pg_students = tree.xpath(University.TOTAL_PG_STUDENTS)[0].strip()
+    # total_ug_students = tree.xpath(University.TOTAL_UG_STUDENTS)[0].strip()
+    # try:
+    #     inter_pg_students = tree.xpath(University.INTER_PG_STUDENTS)[0].strip()
+    #     inter_ug_students = tree.xpath(University.INTER_UG_STUDENTS)[0].strip()
+    # except IndexError:
+    #     inter_pg_students = ''
+    #     inter_ug_students = ''
+    # total_faculty_staff = tree.xpath(University.TOTAL_FACULTY_STAFF)[0].strip()
+    # inter_faculty_staff = tree.xpath(University.INTER_FACULTY_STAFF)[0].strip()
+    # domes_faculty_staff = tree.xpath(University.DOMES_FACULTY_STAFF)[0].strip()
 
-    scholarships = tree.xpath(University.SCHOLARSHIPS)
-    if len(scholarships):
-        scholarships = scholarships[0].strip()
-    else:
-        scholarships = ''
+    # scholarships = tree.xpath(University.SCHOLARSHIPS)
+    # if len(scholarships):
+    #     scholarships = scholarships[0].strip()
+    # else:
+    #     scholarships = ''
 
     time.sleep(WAIT_CLICK_EVENT_REGISTER_TIME)  # wait for ajax click event bound to element
-    # try:
-    #     qs_rank = parse_qs_rank(browser)
-    # except Exception:
-    #     qs_rank = handle_exception('{}, QS Rank Error!\n'.format(url))
-
     try:
-        qs_subject_ranks = parse_qs_subject_ranks(browser)
+        qs_rank = parse_qs_rank(browser)
     except Exception:
-        traceback.format_exc()
-        qs_subject_ranks = handle_exception('{}, QS Subject Rank Error!\n'.format(url))
+        qs_rank = handle_exception('{}, QS Rank Error!\n'.format(url))
+
+    # try:
+    #     qs_subject_ranks = parse_qs_subject_ranks(browser)
+    # except Exception:
+    #     traceback.format_exc()
+    #     qs_subject_ranks = handle_exception('{}, QS Subject Rank Error!\n'.format(url))
 
     # try:
     #     wu_rank = parse_wu_rank(browser)
@@ -371,29 +377,49 @@ def get_one_university(browser: WebDriver, url: str) -> University:
     # except Exception:
     #     au_rank = handle_exception('{}, Asian University Rank Error!\n'.format(url))
 
+    # return University(
+    #     title=title,
+    #     status=status,
+    #     research_output=research_output,
+    #     sf_ratio=sf_ratio,
+    #     scholarships=scholarships,
+    #     inter_students=inter_students,
+    #     size=size,
+    #     total_students=total_students,
+    #     total_pg_students=total_pg_students,
+    #     total_ug_students=total_ug_students,
+    #     inter_pg_students=inter_pg_students,
+    #     inter_ug_students=inter_ug_students,
+    #     total_faculty_staff=total_faculty_staff,
+    #     inter_faculty_staff=inter_faculty_staff,
+    #     domes_faculty_staff=domes_faculty_staff,
+    #     qs_rank=qs_rank,
+    #     wu_rank=wu_rank,
+    #     us_uni_rank=us_uni_rank,
+    #     ge_rank=ge_rank,
+    #     au_rank=au_rank,
+    #     qs_subject_ranks=qs_subject_ranks,
+    # )
+
     return University(
         title=title,
-        status=status,
-        research_output=research_output,
-        sf_ratio=sf_ratio,
-        scholarships=scholarships,
-        inter_students=inter_students,
-        size=size,
-        total_students=total_students,
-        total_pg_students=total_pg_students,
-        total_ug_students=total_ug_students,
-        inter_pg_students=inter_pg_students,
-        inter_ug_students=inter_ug_students,
-        total_faculty_staff=total_faculty_staff,
-        inter_faculty_staff=inter_faculty_staff,
-        domes_faculty_staff=domes_faculty_staff,
-        # qs_rank=qs_rank,
-        # wu_rank=wu_rank,
-        # us_uni_rank=us_uni_rank,
-        # ge_rank=ge_rank,
-        # au_rank=au_rank,
-        qs_subject_ranks=qs_subject_ranks,
+        status='',
+        research_output='',
+        sf_ratio='',
+        scholarships='',
+        inter_students='',
+        size='',
+        total_students='',
+        total_pg_students='',
+        total_ug_students='',
+        inter_pg_students='',
+        inter_ug_students='',
+        total_faculty_staff='',
+        inter_faculty_staff='',
+        domes_faculty_staff='',
+        qs_rank=qs_rank,
     )
+
 
 
 def handle_exception(msg: str):
@@ -467,10 +493,9 @@ def init_driver() -> WebDriver:
 
 def main():
     browser = init_driver()
-    # urls = get_all_urls_from_file('1.txt')
-    urls = ['https://www.topuniversities.com/universities/universite-de-montreal']
+    urls = get_all_urls_from_file('urls.txt')[100:500]
     unis = get_all_universities(urls, browser)
-    save_to_excel(unis, 'res_1.xlsx')
+    save_to_excel(unis, 'res_new.xlsx')
 
 
 if __name__ == '__main__':

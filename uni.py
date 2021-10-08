@@ -24,22 +24,50 @@ class Rank:
 class QSRank(Rank):
     ELEM = '//*[@id="wur-tab"]'
     RANK = '//*[@id="wur-tab"]/div/text()'
-    OVERALL = '//div[@class="circle"][1]/div/text()'
-    ACADEMIC_REPUTATION = '//div[@class="circle"][2]/div/text()'
-    CITATIONS_PER_FACULTY = '//div[@class="circle"][3]/div/text()'
-    EMPLOYER_REPUTATION = '//div[@class="circle"][4]/div/text()'
-    FS_RATIO = '//div[@class="circle"][5]/div/text()'
-    INTER_FACULTY_RATIO = '//div[@class="circle"][6]/div/text()'
-    INTER_STUDENTS_RATIO = '//div[@class="circle"][7]/div/text()'
-    INDICATORS = [
-        OVERALL,
-        ACADEMIC_REPUTATION,
-        CITATIONS_PER_FACULTY,
-        EMPLOYER_REPUTATION,
-        FS_RATIO,
-        INTER_FACULTY_RATIO,
-        INTER_STUDENTS_RATIO
+
+    OVERALL_LITERAL = 'Overall'
+    ACADEMIC_REPUTATION_LITERAL = 'Academic Reputation'
+    EMPLOYER_REPUTATION_LITERAL = 'Employer Reputation'
+    FS_RATIO_LITERAL = 'Faculty Student Ratio'
+    CITATIONS_PER_FACULTY_LITERAL = 'Citations per Faculty'
+    INTER_FACULTY_RATIO_LITERAL = 'International Faculty Ratio'
+    INTER_STUDENTS_RATIO_LITERAL = 'International Students Ratio'
+
+    ITEM_LITERALS = [
+        OVERALL_LITERAL,
+        ACADEMIC_REPUTATION_LITERAL,
+        EMPLOYER_REPUTATION_LITERAL,
+        FS_RATIO_LITERAL,
+        CITATIONS_PER_FACULTY_LITERAL,
+        INTER_FACULTY_RATIO_LITERAL,
+        INTER_STUDENTS_RATIO_LITERAL
     ]
+
+    ITEM_SCORES = [
+        '//div[@class="circle"][1]/div[1]/text()',
+        '//div[@class="circle"][2]/div[1]/text()',
+        '//div[@class="circle"][3]/div[1]/text()',
+        '//div[@class="circle"][4]/div[1]/text()',
+        '//div[@class="circle"][5]/div[1]/text()',
+        '//div[@class="circle"][6]/div[1]/text()',
+        '//div[@class="circle"][7]/div[1]/text()',
+    ]
+    ITEM_NAMES = [
+        '//div[@class="circle"][1]/div[@class="itm-name"]/text()',
+        '//div[@class="circle"][2]/div[@class="itm-name"]/text()',
+        '//div[@class="circle"][3]/div[@class="itm-name"]/text()',
+        '//div[@class="circle"][4]/div[@class="itm-name"]/text()',
+        '//div[@class="circle"][5]/div[@class="itm-name"]/text()',
+        '//div[@class="circle"][6]/div[@class="itm-name"]/text()',
+        '//div[@class="circle"][7]/div[@class="itm-name"]/text()',
+    ]
+
+    @staticmethod
+    def map_item_name_to_idx(name: str) -> int:
+        for i, l in enumerate(QSRank.ITEM_LITERALS):
+            if name in l:
+                return i
+        return 0
 
     def __init__(
         self, rank, overall, academic_reputation, 
@@ -62,9 +90,9 @@ class QSRank(Rank):
         res += '\tRank: {}\n'.format(self.rank)
         res += '\tOverall: {}\n'.format(self.overall)
         res += '\tAcademic Reputation: {}\n'.format(self.academic_reputation)
-        res += '\tCitations per Faculty: {}\n'.format(self.citations_per_faculty)
         res += '\tEmployer Reputation: {}\n'.format(self.employer_reputation)
         res += '\tFaculty Student Ratio: {}\n'.format(self.fs_ratio)
+        res += '\tCitations per Faculty: {}\n'.format(self.citations_per_faculty)
         res += '\tInternational Faculty Ratio: {}\n'.format(self.inter_faculty_ratio)
         res += '\tInternational Students Ratio: {}\n'.format(self.inter_students_ratio)
 
@@ -457,8 +485,9 @@ class University:
         res += str(self.ge_rank) if self.ge_rank else ''
         res += str(self.au_rank) if self.au_rank else ''
 
-        for i in self.qs_subject_ranks:
-            res += str(i) if i else ''
+        if self.qs_subject_ranks:
+            for i in self.qs_subject_ranks:
+                res += str(i) if i else ''
 
         res += '}\n'
 
